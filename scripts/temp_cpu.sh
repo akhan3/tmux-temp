@@ -20,7 +20,6 @@ print_cpu_temp() {
   local temp
   local temp_string
   # retrieve temperature of all CPU packages
-  temp_pkg=($(sensors | egrep '^Package' | sed '/^\s*$/d' | awk '{printf("%f ", $4)}'))
   for k in $(seq 0 $((${#temp_pkg[@]} - 1))); do
     temp=${temp_pkg[k]}
     if [ "$units" = "F" ]; then
