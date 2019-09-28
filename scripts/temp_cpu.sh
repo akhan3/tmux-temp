@@ -6,7 +6,15 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$CURRENT_DIR/helpers.sh"
 
 print_cpu_temp() {
-  if command_exists "sensors"; then
+#  if [[ -v _RASPI ]]; then
+  if [[ $(uname -mr) =~ (arm|aarch64|raspi) ]]; then
+    local temp=$(( $(cat /sys/class/thermal/thermal_zone0/temp) / 1000 ))
+    if [ "$units" = "F" ]; then
+      temp=$(celsius_to_fahrenheit "$temp")
+    fi
+    local temp_string="$temp_string $(printf "%3.0fº%s" "$temp" "$units")"
+    echo "$temp_string" | awk 'BEGIN{OFS=" "}$1=$1{print $0}'
+  elif command_exists "sensors"; then
     local units=$1
     local temp
     local temp_pkg
